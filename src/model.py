@@ -4,9 +4,10 @@
 
 import math
 import logging
-import torch
-import torch.nn as nn
-from torch.nn import functional as F
+import oneflow as torch
+import oneflow.nn as nn
+from oneflow.nn import functional as F
+
 logger = logging.getLogger(__name__)
 
 
@@ -47,7 +48,7 @@ class RWKV_TimeMix(nn.Module):
 
         k = torch.clamp(k, max=30, min=-60)
         k = torch.exp(k)
-        sum_k = torch.cumsum(k, dim=1)
+        sum_k = torch.cumsum(k, dim=1)   
 
         kv = (k * v).view(B, T, self.n_head, self.head_size)
 
