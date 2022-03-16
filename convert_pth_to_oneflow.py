@@ -4,23 +4,16 @@ import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
-import src.utils
 from src.model import GPT, GPTConfig
 import oneflow as flow
-import shutil
-import os
 
-
-
-
-SAVE_PATH = './model/'
-DATA_NAME = 'wangwen'
+SAVE_PATH = './model/wangwen-2022-02-15'
 RUN_DEVICE = 'gpu' # gpu 或 dml 或 cpu
-MODEL_NAME = './model/wangwen' % DATA_NAME # 模型名
-WORD_NAME = './model/wangwen' % DATA_NAME # 这个也修改
+MODEL_NAME = './model/wangwen-2022-02-15'
+WORD_NAME = './model/wangwen-2022-02-15' 
 
 
-ctx_len = 512    # 模型关注的句子长度
+ctx_len = 512
 n_layer = 12
 n_head = 12
 n_embd = n_head * 64
