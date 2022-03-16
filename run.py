@@ -53,7 +53,7 @@ context = "这是一颗"
 
 ##############################################################################
 
-ctx_len = 512    # 模型关注的句子长度
+ctx_len = 512
 n_layer = 12
 n_head = 12
 n_embd = n_head * 64
@@ -106,6 +106,7 @@ for run in range(NUM_OF_RUNS):
     for i in range(LENGTH_OF_EACH):
 
         if i == 0:
+            
             print(('-' * 60) + '\n' + context.replace('\n', '\n  ').strip('\n'), end = '')
             print_begin = real_len
 
