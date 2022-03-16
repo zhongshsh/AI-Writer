@@ -106,7 +106,7 @@ for run in range(NUM_OF_RUNS):
     for i in range(LENGTH_OF_EACH):
 
         if i == 0:
-            
+
             print(('-' * 60) + '\n' + context.replace('\n', '\n  ').strip('\n'), end = '')
             print_begin = real_len
 
