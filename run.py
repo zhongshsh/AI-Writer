@@ -5,9 +5,9 @@
 
 import numpy as np
 import math, json
-import torch
-import torch.nn as nn
-from torch.nn import functional as F
+import oneflow as torch
+import oneflow.nn as nn
+from oneflow.nn import functional as F
 
 import src.utils
 from src.model import GPT, GPTConfig
@@ -74,7 +74,7 @@ vocab_size = len(word_table)
 train_dataset = lambda: None
 train_dataset.stoi = {v: int(k) for k, v in word_table.items()}
 train_dataset.itos = {int(k): v for k, v in word_table.items()}
-UNKNOWN_CHAR = train_dataset.stoi['\ue083']
+UNKNOWN_CHAR = train_dataset.stoi['0']
 
 print(f'\nLoading model for {RUN_DEVICE}...', end=' ')
 if RUN_DEVICE == 'dml':
@@ -87,25 +87,7 @@ if RUN_DEVICE == 'dml':
     rt_session.set_providers(['DmlExecutionProvider'])
 else:
     model = GPT(GPTConfig(vocab_size, ctx_len, n_layer=n_layer, n_head=n_head, n_embd=n_embd, n_attn=n_attn, n_ffn=n_ffn))
-    m2 = torch.load(MODEL_NAME + '.pth', map_location='cpu').state_dict()
-    for i in range(n_layer):
-        prefix = f'blocks.{i}.attn.'
-        time_w = m2[prefix + 'time_w']
-        time_alpha = m2[prefix + 'time_alpha']
-        time_beta = m2[prefix + 'time_beta']
-        
-        TT = ctx_len
-        T = ctx_len
-        w = F.pad(time_w, (0, TT))
-        w = torch.tile(w, [TT])
-        w = w[:, :-TT].reshape(-1, TT, 2 * TT - 1)
-        w = w[:, :, TT-1:]
-        w = w[:, :T, :T] * time_alpha[:, :, :T] * time_beta[:, :T, :]
-        
-        m2[prefix + 'time_ww'] = w
-        del m2[prefix + 'time_w']
-        del m2[prefix + 'time_alpha']
-        del m2[prefix + 'time_beta']
+    m2 = torch.load(MODEL_NAME)
     if RUN_DEVICE == 'gpu':
         model = model.cuda()
     model.load_state_dict(m2)
@@ -138,6 +120,7 @@ for run in range(NUM_OF_RUNS):
                 out = torch.tensor(out[0])
             else:
                 xxx = torch.tensor(x[-ctx_len:], dtype=torch.long)[None,...]
+
                 if RUN_DEVICE == 'gpu':
                     xxx = xxx.cuda()
                 out, _ = model(xxx)
